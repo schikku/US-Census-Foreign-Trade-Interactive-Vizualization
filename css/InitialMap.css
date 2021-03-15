@@ -1,0 +1,116 @@
+﻿ .myCSSClass {
+            background-color: transparent;
+            border-color: transparent;
+            border-width: 0;
+            border-style: none;
+            outline: none;
+            box-shadow: none;
+        }
+
+        .nonCountyCSS {
+            background-color: transparent;
+            border-color: transparent;
+            border-width: 0;
+            border-style: none;
+            outline: none;
+            box-shadow: none;
+            font-size: 10px;
+        }
+        #bndyType {
+            position: fixed;
+            z-index: 5000;
+            top: 25%;
+            left: 3%;
+            background-color: coral;
+            border: 1px;
+            border-color: black;
+            font-weight: bold;
+            color: white;
+        }
+        #mapid {
+           align-content:center;
+        }
+html, body {
+    height: 100%;
+    width: 100%;
+}
+body {
+        overflow: scroll;
+
+}
+         @font-face {
+    font-family: VistaSlab;
+    src: url(http://www.savi.org/savi/VistaSlab/3491C2_1_0.woff2);
+}
+    
+ @import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css");
+.panel-title > a:before {
+    float: right !important;
+    font-family: FontAwesome;
+    content:"+";
+    padding-right: 5px;
+}
+.panel-title > a.collapsed:before {
+    float: right !important;
+    content:"-";
+}
+.panel-title > a:hover, 
+.panel-title > a:active, 
+.panel-title > a:focus  {
+    text-decoration:none;
+}
+
+#accordion {
+    position: fixed;
+    z-index: 5000;
+    top: 45%;
+    left: 3%;
+    border: 1px;
+    border-color: black;
+    font-weight: bold;
+    width: 15%;
+}
+
+.bndSel {
+    margin: 4px;
+    width: 50px;
+    height: 50px;
+}
+#clickSel {
+    background-image: url('../img/ClickSelected.png');
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+}
+
+#radSel {
+    background-image: url('../img/Radius.png');
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+}
+#bufSel{
+background-image: url('../img/Buffer.png');
+width: 50px;
+    height: 50px;
+    display: inline-flex;
+}
+#polySel {
+    background-image: url('../img/Polygon.png');
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+}
+
+
+
+
+
+
+
+
+
+      
+
+
+

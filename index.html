@@ -1,0 +1,1803 @@
+﻿<!DOCTYPE html>
+<html style="zoom: 75%;">
+<head>
+    <title>Project 2: Visualization, Design and Analysis - US Census Foreign Trade</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css">
+   <link href="app/css/bootstrap.min.css" rel="stylesheet" />  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
+
+    <script src="lib/geostats.min.js"></script>
+    <link href="lib/geostats.css" rel="stylesheet" />
+    <style>
+        body, select option, select {
+            font-family: Gotham-Book !important;
+        }
+
+        @font-face {
+            font-family: 'Gotham-Bold';
+            src: url('css/Fonts/OpenType/Gotham-Bold.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'Gotham-Book';
+            src: url('css/Fonts/OpenType/Gotham-Book.otf') format('opentype');
+        }
+
+        @font-face {
+            font-family: 'Gotham-Medium';
+            src: url('css/Fonts/OpenType/Gotham-Medium.otf') format('opentype');
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #map, #map1 {
+            width: 800px;
+            height: 500px;
+            font-family: Gotham-Book !important;
+        }
+
+        .info, .info1 {
+            padding: 6px 8px;
+            font: 14px/16px Gotham-Book !important;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+
+            .info h4, .info1 h4 {
+                margin: 0 0 5px;
+                color: #777;
+            }
+
+        .legend {
+            text-align: left;
+            line-height: 18px;
+            color: #555;
+        }
+
+            .legend i {
+                width: 18px;
+                height: 18px;
+                float: left;
+                margin-right: 8px;
+                opacity: 0.7;
+            }
+
+        input[type=radio].with-font, input[type=checkbox].with-font {
+            border: 0;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+        }
+
+            input[type=radio].with-font:checked ~ label:before, input[type=checkbox].with-font:checked ~ label:before {
+                content: "\f00c";
+                font-size: 1.2em;
+                color: darkgreen;
+                letter-spacing: 5px;
+            }
+
+            input[type=radio].with-font ~ label:before, input[type=checkbox].with-font ~ label:before {
+                font-family: FontAwesome;
+                display: inline-block;
+                content: "\f1db";
+                letter-spacing: 10px;
+                font-size: 1.2em;
+                color: #535353;
+                width: 1.4em;
+            }
+
+        #testCodeNum {
+            width: 300px;
+        }
+    </style>
+</head>
+<body ng-app="todoApp" ng-controller="TodoListController as todoList">
+    <h3 style="margin-top:0px;">Project 2: USA Exports and Imports Visualizations for Analysis with US Census Foreign Trade Data.   &nbsp;  Documentation <a href="http://sindhu.stylesyou.com/project2/Documentation.html">click here</a> </h3>
+    <br /><br /><h6><b>Note:</b> Click state to show vizs <br />of state below map and Hover state<br />to see pie chart on right</h6>
+    <div class="w3-sidebar w3-bar-block w3-collapse w3-card" style="width:300px;" id="mySidebar">
+        <br /><br />
+        <label style="margin-left:10px;margin-top:10px;">Select Year:</label>
+        <select id="year" style="width:150px;margin-left:20px;">
+            <option value="2013">2013</option>
+            <option value="2014">2014</option>
+            <option selected value="2015">2015</option>
+            <option  value="2016">2016</option>
+        </select><br /><br />
+        <div style="margin-left:10px;margin-top:0px;">Select:</div>
+        <div style="margin-left:90px;margin-top:-25px">
+            <input checked="" id="question1" onselect="" name="question" type="radio" class="with-font" value="sel">
+            <label for="question1">Import</label>
+        </div>
+        <div style="margin-left:190px; margin-top:-35px">
+            <input id="question2" name="question" onselect="" type="radio" class="with-font" value="sel">
+            <label for="question2">Export</label>
+        </div><br />
+        <select id="allStates" style="width:280px;" onchange="zoomToFeature1();">
+            <option value="hide">--Choose US State--</option>
+        </select><br /><br />
+        <div style="margin-left:10px;margin-top:0px;">Select:</div>
+
+        <div style="margin-left:90px;margin-top:-25px">
+            <input checked="" id="question3" onchange="$('#country').show(); $('#testCodeNum').hide(); " name="question1" type="radio" class="with-font" value="sel">
+            <label for="question3">By Country</label>
+        </div>
+        <div style="margin-left:90px; margin-top:-5px">
+            <input id="question4" name="question1" onchange="$('#country').hide(); $('#testCodeNum').show();" type="radio" class="with-font" value="sel">
+            <label for="question4">By Products</label>
+        </div><br />
+
+        <select id="country" style="width: 280px;" class="mainselect">
+            <option value="World">--All Countries--</option>
+        </select><br /><br />
+        <select id="testCodeNum" style="width: 280px; display:none">
+            <option value="0">Total - All Products</option>
+        </select>
+    </div>
+    <div style="margin-left:300px; top: 30px; position:absolute">
+        <div id='map'></div><br /><br /><br /><br />
+    </div>
+    <div id="pieChart1"></div>
+    <script type="text/javascript" src="mapdata/US-States.js"></script>
+    <script src="world.geo.json-master/countriesgeo.js"></script>
+    <script type="text/javascript">
+        var list = d3.select("#testCodeNum");
+        var bool1 = true;
+        d3.tsv("data/exportimportProductsCodeNum.tsv",
+            function (error, data) {
+                callbackError = error;
+                callbackData = data;
+                list.selectAll("select")
+                .data(data)
+                .enter()
+                .append("option")
+                    .attr("value", function (d) { return d.code_num; })
+                .text(function (d) { return d.code_num + " - " + d.code_name; })
+            });
+
+        var dataArray = [];
+        var v;
+        var dataTSV = "data/imstall.tsv";
+       
+        
+        var importExportVal = "import";
+        var yearVal = "2016";
+        function exportImportValue() {
+            if ($("#question1")[0].checked) {
+                return "Imports";
+            }
+            else {
+                return "Exports";
+            }
+        }
+        var tempVal123;
+        $(document).ready(function () {
+            console.log("loading initial US content!");
+           
+            tempVal123 = $("select#country option:selected").attr('value');
+
+            USimportExport(dataTSV, importExportVal, yearVal, "World");
+            $("input[name='question']").change(function () {
+                if ($("#question1")[0].checked) {
+                    importExportVal = "import";
+                    dataTSV = "data/imstall.tsv";
+                    if ($("#question3")[0].checked) {
+                        dataTSV = "data/ImportsCountryAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                        WorldImportExport(dataTSV);
+                    }
+                    else {
+                        dataTSV = "data/imstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                        US1ImportExport(dataTSV);
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                }
+                else {
+                    importExportVal = "export";
+                    dataTSV = "data/exstall.tsv";
+                    if ($("#question3")[0].checked) {
+                        dataTSV = "data/ExportsToCountriesAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                        WorldImportExport(dataTSV);
+                    }
+                    else {
+                        dataTSV = "data/exstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                        US1ImportExport(dataTSV);
+                    }
+                USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                }
+            });
+
+            $("select#country").change(function () {
+                if ($("#question1")[0].checked) {
+                    importExportVal = "import";
+                    dataTSV = "data/imstall.tsv";
+                    if ($("#question3")[0].checked) {
+                        dataTSV = "data/ImportsCountryAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                    }
+                    else {
+                        dataTSV = "data/imstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                }
+                else {
+                    importExportVal = "export";
+                    dataTSV = "data/exstall.tsv";
+                    if ($("#question3")[0].checked) {
+                        dataTSV = "data/ExportsToCountriesAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                    }
+                    else {
+                        dataTSV = "data/exstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                }
+            });
+            
+
+            $("select#testCodeNum").change(function () {
+                if ($("#question1")[0].checked) {
+                    importExportVal = "import";
+                    dataTSV = "data/imstall.tsv";
+                    if ($("#question3")[0].checked) {
+                        dataTSV = "data/ImportsCountryAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                    }
+                    else {
+                        dataTSV = "data/imstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                }
+                else {
+                    importExportVal = "export";
+                    dataTSV = "data/exstall.tsv";
+                    if ($("#question3")[0].checked) {
+                        dataTSV = "data/ExportsToCountriesAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                    }
+                    else {
+                        dataTSV = "data/exstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                }
+            });
+
+
+            $("input[name='question1']").change(function () {
+                if ($("#question1")[0].checked) {
+                    importExportVal = "import";
+                    dataTSV = "data/imstall.tsv";
+                    if ($("#question3")[0].checked){
+                        dataTSV = "data/ImportsCountryAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                        WorldImportExport(dataTSV);
+                    }
+                    else{
+                        dataTSV = "data/imstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                        US1ImportExport(dataTSV);
+                     }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'),tempVal123);
+                }
+                else {
+                    importExportVal = "export";
+                    dataTSV = "data/exstall.tsv";
+                    if ($("#question3")[0].checked)
+                    {  
+                        dataTSV = "data/ExportsToCountriesAll.tsv";
+                        tempVal123 = $("select#country option:selected").attr('value');
+                        WorldImportExport(dataTSV);
+                    }
+                    else
+                    { 
+                        dataTSV = "data/exstall.tsv";
+                        tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                        US1ImportExport(dataTSV);
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'),tempVal123);
+                }
+            });
+
+            $("select#year").change(yearChangeFunction);
+        });
+
+        function yearChangeFunction() {
+            yearVal = $("select#year option:selected").attr('value');
+            if ($("#question1")[0].checked) {
+                importExportVal = "import";
+                dataTSV = "data/imstall.tsv";
+                if ($("#question3")[0].checked) {
+                    dataTSV = "data/ImportsCountryAll.tsv";
+                    tempVal123 = $("select#country option:selected").attr('value');
+                    WorldImportExport(dataTSV);
+                }
+                else {
+                    dataTSV = "data/imstall.tsv";
+                    tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                    US1ImportExport(dataTSV);
+                }
+                USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+            }
+            else {
+                importExportVal = "export";
+                dataTSV = "data/exstall.tsv";
+                if ($("#question3")[0].checked) {
+                    dataTSV = "data/ExportsToCountriesAll.tsv";
+                    tempVal123 = $("select#country option:selected").attr('value');
+                    WorldImportExport(dataTSV);
+                }
+                else {
+                    dataTSV = "data/exstall.tsv";
+                    tempVal123 = $("select#testCodeNum option:selected").attr('value');
+                    US1ImportExport(dataTSV);
+                }
+                USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+            }
+            //USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'));
+        }
+
+   
+        function US1ImportExport(dataTSV1) {
+            d3.tsv(dataTSV1,
+                           function (error, data) {
+
+                               var unique = [];
+                               var unique1 = [];
+                               for (var i = 0; i < data.length; i++) {
+
+                               
+                                   if (unique.indexOf(data[i].abbreviatn + ":" + data[i].hs6) === -1) {
+                                       unique.push(data[i].abbreviatn + ":" + data[i].hs6);
+                                     
+                                   }
+
+                               }
+
+                               var selectList = $("#testCodeNum");
+                               selectList.find("option:gt(0)").remove();
+                               $.each(unique, function (i, item) {
+                                   if (i > 0) {
+                                       $('#testCodeNum').append($('<option>', {
+                                           value: item.split(":")[1],
+                                           text: item.split(":")[0] + " HSCode:" + item.split(":")[1]
+                                       }));
+                                   }
+                               });
+                           });
+        }
+
+
+
+        var map;
+        var legend;
+        var serie;
+        var div;
+        var info;
+        var dataArray;
+        var pieChartData = [];
+        function USimportExport(dataTSV, exportimportVal, yearChange, countryProductID) {
+
+            if (exportimportVal == "import") {
+                //dataTSV = "data/imstall.tsv";
+                if ($("#question3")[0].checked) {
+                    dataTSV = "data/ImportsCountryAll.tsv";
+                    //WorldImportExport(dataTSV);
+                } else {
+                    dataTSV = "data/imstall.tsv";
+                    //US1ImportExport(dataTSV);
+                }
+            }
+            else {
+                if ($("#question3")[0].checked) {
+                    dataTSV = "data/ExportsToCountriesAll.tsv";
+                }
+                else {
+                    dataTSV = "data/exstall.tsv";
+                    //US1ImportExport(dataTSV);
+                }
+            }
+            d3.tsv(dataTSV,
+                function (error, data) {
+                    if (map) {
+                        map.remove();
+                        legend.remove();
+                        info.remove();
+                        dataArray = [];
+                    }
+                    callbackError = error;
+                    callbackData = data;
+
+                    //// usage example:
+                    //var a = ['a', 1, 'a', 2, '1'];
+
+                    var unique = [];
+                    for (var i = 0; i < data.length; i++) {
+
+                        if ($("#question3")[0].checked) {
+                            if (unique.indexOf(data[i].statename) === -1 && data[i].countryd == countryProductID) {
+                                unique.push(data[i].statename);
+                                if (yearChange == "2016")
+                                    dataArray.push(data[i].val2016);
+                                else if (yearChange == "2015")
+                                    dataArray.push(data[i].val2015);
+                                else if (yearChange == "2014")
+                                    dataArray.push(data[i].val2014);
+                                else if (yearChange == "2013")
+                                    dataArray.push(data[i].val2013);
+                            }
+                        }
+                        else {
+                            if (unique.indexOf(data[i].statename) === -1 && data[i].hs6 == countryProductID) {
+                                unique.push(data[i].statename);
+                                if (yearChange == "2016")
+                                    dataArray.push(data[i].val2016);
+                                else if (yearChange == "2015")
+                                    dataArray.push(data[i].val2015);
+                                else if (yearChange == "2014")
+                                    dataArray.push(data[i].val2014);
+                                else if (yearChange == "2013")
+                                    dataArray.push(data[i].val2013);
+                            }
+                        }
+                    }
+
+                    var selectList = $("#allStates");
+                    selectList.find("option:gt(0)").remove();
+                    $.each(unique, function (i, item) {
+                        $('#allStates').append($('<option>', {
+                            value: item,
+                            text: item
+                        }));
+                    });
+
+                    // list.selectAll("select#allStates")
+                    //.data(unique)
+                    //.enter()
+                    //.append("option")
+                    //.attr("value", function (d) { return d.name; })
+                    //.text(function (d) { return d.name; })
+
+                    serie = new geostats(dataArray);
+                    if (dataArray.length > 7)
+                        v = serie.getJenks(7);
+                    else
+                     v = serie.getJenks(2);
+
+                    map = L.map('map').setView([37.8, -96], 4);
+
+                    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                        maxZoom: 18,
+                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                        id: 'mapbox.light'
+                    }).addTo(map);
+
+
+                    // control that shows state info on hover
+                    info = L.control();
+
+                    info.onAdd = function (map) {
+                        this._div = L.DomUtil.create('div', 'info');
+                        this.update();
+                        return this._div;
+                    };
+
+               info.update = function (props) {
+                        this._div.innerHTML = '<h4>US ' + exportImportValue() + '</h4>' + (props ?
+                            '<b>' + props.name + '</b><br />' + getMapValue(props.name) + ' $<sup></sup>'
+                            : 'Hover over a state');
+                    };
+
+                    info.addTo(map);
+
+                    // get color depending on population density value
+                    function getColor(d) {
+                        return d == 7 ? '#800026' :
+                                d == 6 ? '#BD0026' :
+                                d == 5 ? '#E31A1C' :
+                                d == 4 ? '#FC4E2A' :
+                                d == 3 ? '#FD8D3C' :
+                                d == 2 ? '#FEB24C' :
+                                d == 1 ? '#FED976' :
+                                            '#FFEDA0';
+                    }
+
+                    function style(feature) {
+                        return {
+                            weight: 2,
+                            opacity: 1,
+                            color: 'white',
+                            dashArray: '3',
+                            fillOpacity: 0.7,
+                            fillColor: getColorMap(feature.properties.name)
+                        };
+                    }
+
+                    function getColorMap(geogName) {
+                        for (var i = 0; i < data.length; i++) {
+                            if ($("#question3")[0].checked) {
+                                if (data[i].statename == geogName && data[i].countryd == countryProductID) {
+                                    for (var j = 0; j < v.length; j++) {
+                                        from = v[j];
+                                        to = v[j + 1];
+
+                                        if (yearChange == "2016")
+                                            val123 = data[i].val2016;
+                                        else if (yearChange == "2015")
+                                            val123 = data[i].val2015;
+                                        else if (yearChange == "2014")
+                                            val123 = data[i].val2014;
+                                        else if (yearChange == "2013")
+                                            val123 = data[i].val2013;
+
+                                        if (val123 >= from && val123 < to) {
+                                            return getColor(j);
+                                            break;
+                                        }
+                                        else if (to == undefined) {
+                                            return getColor(j);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (data[i].statename == geogName && data[i].hs6 == countryProductID) {
+                                    for (var j = 0; j < v.length; j++) {
+                                        from = v[j];
+                                        to = v[j + 1];
+
+                                        if (yearChange == "2016")
+                                            val123 = data[i].val2016;
+                                        else if (yearChange == "2015")
+                                            val123 = data[i].val2015;
+                                        else if (yearChange == "2014")
+                                            val123 = data[i].val2014;
+                                        else if (yearChange == "2013")
+                                            val123 = data[i].val2013;
+
+                                        if (val123 >= from && val123 < to) {
+                                            return getColor(j);
+                                            break;
+                                        }
+                                        else if (to == undefined) {
+                                            return getColor(j);
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+
+                    function getMapValue(geogName) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].statename == geogName) {
+                                var dataTemp1=0;
+                                pieChartData = [];
+                                if (yearChange == "2016") {
+                                    if ($("#question3")[0].checked) {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].countryd, "value": data[j].share16 };
+                                            pieChartData.push(tempPieData);
+                                        }
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].countryd == countryProductID) {
+                                                dataTemp1 = data[z].val2016;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].abbreviatn, "value": data[j].share16 };
+                                            pieChartData.push(tempPieData);
+                                        }
+
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].hs6 == countryProductID) {
+                                                dataTemp1 = data[z].val2016;
+                                            }
+                                        }
+                                    }
+                                    change(pieChartData);
+                                    //&& data[i].countryd == countryProductID
+                                    return dataTemp1;
+                                }
+                                else if (yearChange == "2015") {
+                                    if ($("#question3")[0].checked) {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].countryd, "value": data[j].share15 };
+                                            pieChartData.push(tempPieData);
+                                        }
+
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].countryd == countryProductID) {
+                                                dataTemp1 = data[z].val2015;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].abbreviatn, "value": data[j].share15 };
+                                            pieChartData.push(tempPieData);
+                                        }
+
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].hs6 == countryProductID) {
+                                                dataTemp1 = data[z].val2015;
+                                            }
+                                        }
+                                    }
+                                    change(pieChartData);
+                                    return dataTemp1;
+                                }
+                                else if (yearChange == "2014") {
+                                    if ($("#question3")[0].checked) {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].countryd, "value": data[j].share14 };
+                                            pieChartData.push(tempPieData);
+                                        }
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].countryd == countryProductID) {
+                                                dataTemp1 = data[z].val2014;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].abbreviatn, "value": data[j].share14 };
+                                            pieChartData.push(tempPieData);
+                                        }
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].hs6 == countryProductID) {
+                                                dataTemp1 = data[z].val2014;
+                                            }
+                                        }
+                                    }
+                                    change(pieChartData);
+                                    return dataTemp1;
+                                }
+                                else if (yearChange == "2013") {
+                                    if ($("#question3")[0].checked) {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].countryd, "value": data[j].share13 };
+                                            pieChartData.push(tempPieData);
+                                        }
+                                        for (z = i ; z < i + 27; z++) {
+                                            if (data[z].countryd == countryProductID)
+                                            {
+                                                dataTemp1 = data[z].val2013;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (j = i + 2; j < i + 10; j++) {
+                                            var tempPieData = { "label": data[j].abbreviatn, "value": data[j].share13 };
+                                            pieChartData.push(tempPieData);
+                                        }
+
+                                        for (z = i ; z < i + 17; z++) {
+                                            if (data[z].hs6 == countryProductID)
+                                            {
+                                                dataTemp1 = data[z].val2013;
+                                            }
+                                        }
+                                    }
+                                    //hs6
+                                    change(pieChartData);
+                                    return dataTemp1;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+
+                    function highlightFeature(e) {
+                        $("#pieChart1").show();
+                        var layer = e.target;
+                        layer.setStyle({
+                            weight: 5,
+                            color: '#666',
+                            dashArray: '',
+                            fillOpacity: 0.7
+                        });
+                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                            layer.bringToFront();
+                        }
+                        info.update(layer.feature.properties);
+                    }
+
+                    function highlightFeature1(e) {
+                        
+                        var layer = e.target;
+                        $("#pieChart1").show();
+                        layer.setStyle({
+                            weight: 1,
+                            color: '#333',
+                            dashArray: '',
+                            fillOpacity: 0.7
+                        });
+                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                            layer.bringToFront();
+                        }
+                        info.update(layer.feature.properties);
+                        //showstatedata(layer.feature);
+                    }
+
+                    var geojson;
+                    function resetHighlight(e) {
+                        $("#pieChart1").hide();
+                        geojson.resetStyle(e.target);
+                        info.update();
+                    }
+
+                    function zoomToFeature(e) {
+                        if (bool1 == true) {
+                            bool1 = false;
+                            highlightFeature(e);
+                            map.fitBounds(e.target.getBounds());
+                            $("#allStates").val(e.target.feature.properties.name);
+                            showstatedata(e.target.feature);
+                        }
+                        else {
+                            bool1 = true;
+                            resetHighlight(e);
+                            // map.fitBounds(e.target.getBounds());
+                            map.setView([37.8, -96], 4);
+                            $("#allStates").val("hide");
+                            //showstatedata(e.target.feature);
+                            //getexportimportdata('World');
+                        }
+                    }
+
+
+
+                    //e.target.feature.properties.name
+
+                    function onEachFeature(feature, layer) {
+                        layer.on({
+                            mouseover: highlightFeature1,
+                            mouseout: resetHighlight,
+                            click: zoomToFeature
+                        });
+                    }
+
+
+                    function onlyUnique(value, index, self) {
+                        return self.indexOf(value) === index;
+                    }
+
+
+                    geojson = L.geoJson(statesData, {
+                        style: style,
+                        onEachFeature: onEachFeature
+                    }).addTo(map);
+
+                    map.attributionControl.addAttribution('Export Import Data &copy; <a href="http://census.gov/">US Census Foreign Trade Data</a>');
+
+
+                    legend = L.control({ position: 'bottomright' });
+
+                    legend.onAdd = function (map) {
+                        //Gautham
+                        //var dataArray = [];
+                        //var dataGeoIdArray = [];
+                        //var v;
+                        div = L.DomUtil.create('div', 'info legend'),
+                           grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+                           labels = [],
+                           from, to;
+                        //d3.tsv("data/imstall.tsv",
+                        //    function (error, data) {
+
+
+                        //        callbackError = error;
+                        //        callbackData = data;
+
+
+
+
+                        //        //// usage example:
+                        //        //var a = ['a', 1, 'a', 2, '1'];
+
+                        //        var unique = [];
+                        //        for (var i = 0; i < data.length; i++) {
+
+                        //            //var unique = data[1].statename.filter(onlyUnique); // returns ['a', 1, 2, '1']
+
+                        //            if (unique.indexOf(data[i].statename) === -1) {
+                        //                unique.push(data[i].statename);
+                        //                dataArray.push(data[i].val2016);
+                        //            }
+
+                        //            //dataArray.push(data[i].indicatorValue);
+                        //            //dataGeoIdArray.push(data[i].geoLocId);
+                        //        }
+
+                        //        $.each(unique, function (i, item) {
+                        //            $('#allStates').append($('<option>', {
+                        //                value: item,
+                        //                text: item
+                        //            }));
+                        //        });
+
+
+
+
+                        //       // list.selectAll("select#allStates")
+                        //       //.data(unique)
+                        //       //.enter()
+                        //       //.append("option")
+                        //       //.attr("value", function (d) { return d.name; })
+                        //       //.text(function (d) { return d.name; })
+
+                        //        var serie = new geostats(dataArray);
+                        //        v = serie.getJenks(7);
+                        //        console.log(v);
+
+
+                        for (var i = 0; i < v.length; i++) {
+                            from = v[i];
+                            to = v[i + 1];
+
+                            labels.push(
+                                '<i style="background:' + getColor(i) + '"></i> ' +
+                                from + (to ? '&ndash;' + to : '+'));
+                        }
+
+                        div.innerHTML = labels.join('<br>');
+                        return div;
+                    };
+
+                    legend.addTo(map);
+                });
+        }
+
+        function zoomToFeature1() {
+            var geogName = $("#allStates").val();
+            if (geogName != "hide") {
+                //bool2 = false;
+                //highlightFeature(e);
+                var count11 = 0;
+                jQuery.each(map._layers, function (i, val1) {
+
+                    count11++;
+                    if (count11 == 1 || count11 == 3) { }
+                    else if (val1.feature.properties.name == geogName) {
+                        //geojson.resetStyle(val1.feature.properties);
+                        if (val1.feature.properties.name == geogName) {
+                            map.fitBounds(map._layers[i].getBounds());
+                            showstatedata(val1.feature);
+                            var layer = val1;
+
+                            layer.setStyle({
+                                weight: 1,
+                                color: '#333',
+                                dashArray: '',
+                                fillOpacity: 0.7
+                            });
+
+                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                                layer.bringToFront();
+                            }
+
+                            info.update(layer.feature.properties);
+                        }
+                    }
+
+                });
+            }
+            else {
+                map.fitBounds(map.getBounds());
+                map.setView([37.8, -96], 4);
+                info.update();
+            }
+        }
+    </script>
+    <script data-require="d3@*" data-semver="3.4.6" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+          });
+    </script>
+  
+    <style>
+        #pieChart1 {
+            width: 1720px;
+            height: 500px;
+            position: absolute;
+            left: 1120px;
+            top: 40px;
+        }
+
+            #pieChart1 svg {
+                width: 100%;
+                height: 100%;
+            }
+
+            #pieChart1 .legend {
+                visibility: hidden;
+            }
+
+            #pieChart1 path.slice {
+                stroke-width: 2px;
+            }
+
+            #pieChart1 polyline {
+                opacity: .3;
+                stroke: black;
+                stroke-width: 2px;
+                fill: none;
+            }
+
+            #pieChart1 .labelValue {
+                font-size: 16px;
+                opacity: .5;
+            }
+
+            #pieChart1 .toolTip {
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                position: absolute;
+                display: none;
+                width: auto;
+                height: auto;
+                background: none repeat scroll 0 0 white;
+                border: 0 none;
+                border-radius: 8px 8px 8px 8px;
+                box-shadow: -3px 3px 15px #888888;
+                color: black;
+                font: 12px sans-serif;
+                padding: 5px;
+                text-align: center;
+            }
+
+            #pieChart1 text {
+                font: 16px sans-serif;
+            }
+    </style>
+    <script>
+        d3.select("input[value=\"total\"]").property("checked", true);
+
+        var svg123 = d3.select("#pieChart1")
+            .append("svg")
+            .append("g")
+
+        svg123.append("g")
+            .attr("class", "slices");
+        svg123.append("g")
+            .attr("class", "labelName");
+        svg123.append("g")
+            .attr("class", "labelValue");
+        svg123.append("g")
+            .attr("class", "lines");
+
+        var width = 960,
+            height = 450,
+            radius = Math.min(width, height) / 2;
+
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
+            });
+
+        var arc = d3.svg.arc()
+            .outerRadius(radius * 0.8)
+            .innerRadius(radius * 0.4);
+
+        var outerArc = d3.svg.arc()
+            .innerRadius(radius * 0.9)
+            .outerRadius(radius * 0.9);
+
+        var legendRectSize = (radius * 0.05);
+        var legendSpacing = radius * 0.02;
+
+        var div123 = d3.select("#pieChart1").append("div").attr("class", "toolTip");
+
+        svg123.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        var colorRange = d3.scale.category20();
+        var color = d3.scale.ordinal()
+            .range(colorRange.range());
+
+        datasetTotal = [
+                { label: "Category 1", value: 19 },
+                { label: "Category 2", value: 5 },
+                { label: "Category 3", value: 13 },
+                { label: "Category 4", value: 17 },
+                { label: "Category 5", value: 19 },
+                { label: "Category 6", value: 27 }
+        ];
+
+        datasetOption1 = [
+                { label: "Category 1", value: 22 },
+                { label: "Category 2", value: 33 },
+                { label: "Category 3", value: 4 },
+                { label: "Category 4", value: 15 },
+                { label: "Category 5", value: 36 },
+                { label: "Category 6", value: 0 }
+        ];
+
+        datasetOption2 = [
+                { label: "Category 1", value: 10 },
+                { label: "Category 2", value: 20 },
+                { label: "Category 3", value: 30 },
+                { label: "Category 4", value: 5 },
+                { label: "Category 5", value: 12 },
+                { label: "Category 6", value: 23 }
+        ];
+
+        d3.selectAll("input")
+            .on("change", selectDataset);
+
+        function selectDataset() {
+            var value = this.value;
+            if (value == "total") {
+                change(datasetTotal);
+            }
+            else if (value == "option1") {
+                change(datasetOption1);
+            }
+            else if (value == "option2") {
+                change(datasetOption2);
+            }
+        }
+
+        function change(data) {
+            var slice = svg123.select(".slices").selectAll("path.slice")
+                .data(pie(data), function (d) { return d.data.label });
+
+            slice.enter()
+                .insert("path")
+                .style("fill", function (d) { return color(d.data.label); })
+                .attr("class", "slice");
+
+            slice
+                .transition().duration(1000)
+                .attrTween("d", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        return arc(interpolate(t));
+                    };
+                })
+            slice
+                .on("mousemove", function (d) {
+                    //$("#pieChart1").show();
+                    div123.style("left", d3.event.pageX + 10 + "px");
+                    div123.style("top", d3.event.pageY - 25 + "px");
+                    div123.style("display", "inline-block");
+                    div123.html((d.data.label) + "<br>" + (d.data.value) + "%");
+                });
+            slice
+                .on("mouseout", function (d) {
+                    div123.style("display", "none");
+                    //$("#pieChart1").hide();
+                });
+
+            slice.exit()
+                .remove();
+            //svg123.selectAll('.legend').exit()
+            //        .remove();
+            var legend123 = svg123.selectAll('.legend')
+                .data(color.domain())
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', function (d, i) {
+                    var height = legendRectSize + legendSpacing;
+                    var offset = height * color.domain().length / 2;
+                    var horz = -3 * legendRectSize;
+                    var vert = i * height - offset;
+                    return 'translate(' + horz + ',' + vert + ')';
+                });
+
+            legend123.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style('fill', color)
+                .style('stroke', color);
+
+            legend123.append('text')
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .text(function (d) { return d; });
+
+            /* ------- TEXT LABELS -------*/
+
+            var text123 = svg123.select(".labelName").selectAll("text")
+                .data(pie(data), function (d) { return d.data.label });
+
+            text123.enter()
+                .append("text")
+                .attr("dy", ".35em")
+                .text(function (d) {
+                    return (d.data.label + ": " + d.value + "%");
+                });
+
+            function midAngle(d) {
+                return d.startAngle + (d.endAngle - d.startAngle) / 2;
+            }
+
+            text123
+                .transition().duration(1000)
+                .attrTween("transform", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        var d2 = interpolate(t);
+                        var pos = outerArc.centroid(d2);
+                        pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+                        return "translate(" + pos + ")";
+                    };
+                })
+                .styleTween("text-anchor", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        var d2 = interpolate(t);
+                        return midAngle(d2) < Math.PI ? "start" : "end";
+                    };
+                })
+                .text(function (d) {
+                    return (d.data.label + ": " + d.value + "%");
+                });
+
+
+            text123.exit()
+                .remove();
+
+            /* ------- SLICE TO TEXT POLYLINES -------*/
+
+            var polyline123 = svg123.select(".lines").selectAll("polyline")
+                .data(pie(data), function (d) { return d.data.label });
+
+            polyline123.enter()
+                .append("polyline");
+
+            polyline123.transition().duration(1000)
+                .attrTween("points", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        var d2 = interpolate(t);
+                        var pos = outerArc.centroid(d2);
+                        pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+                        return [arc.centroid(d2), outerArc.centroid(d2), pos];
+                    };
+                });
+
+            polyline123.exit()
+                .remove();
+        };
+
+
+        $(document).ready(function () {
+            
+            setTimeout($('select#year').val(2013).change(), 3500);
+        });
+
+        function WorldImportExport(dataTSV1) {
+            d3.tsv(dataTSV1,
+                           function (error, data) {
+                               var unique = [];
+                               for (var i = 0; i < data.length; i++) {
+                                   if (unique.indexOf(data[i].countryd) === -1) {
+                                       unique.push(data[i].countryd);
+                                   }
+                               }
+
+                               var selectList = $("#country");
+                               selectList.find("option:gt(0)").remove();
+                               $.each(unique, function (i, item) {
+                                   if (i > 0) {
+                                       $('#country').append($('<option>', {
+                                           value: item,
+                                           text: item
+                                       }));
+                                   }
+                               });
+                           });
+        }
+
+
+    </script>
+
+    <style>
+        #us_states_graph,#us_import_export_year,#us_commodity_export_year,#us_commodity_import_year
+{
+	border:2px solid #cdcdcd;
+}
+#us_states_graph_h1,#us_import_export_year_h1,#us_commodity_export_year_h1,#us_commodity_import_year_h1
+{
+	margin-top: 10px;
+    font-size:16px;
+}
+
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+path.domain {
+    display: none;
+}
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+.tooltip {
+	opacity:1 !important;	
+}
+    </style>
+    <!--sindhu-->
+    <script src="app/js/d3.tip.v0.6.3.js"></script>
+    <script type="text/javascript">
+        function showstatedata(d) {
+            var us_states_graph = document.getElementById('us_states_graph');
+            document.getElementById('us_import_export_year_h1').innerHTML = 'Imports and Exports of ' + d.properties.name+' to world';
+            document.getElementById('us_commodity_export_year_h1').innerHTML = 'Top 10 Exports of ' + d.properties.name + ' (Commodity wise) to world';
+            document.getElementById('us_commodity_import_year_h1').innerHTML = 'Top 10 Imports of ' + d.properties.name + ' (Commodity wise) from world';
+            getexportimportdata(d.properties.name);
+        }
+        function showtooltip(d) {
+            //console.log(d);
+        }
+        function hidetooltip(d) {
+            //console.log(d);
+        }
+        var states_complete_data = { "exports": [], "imports": [], "allcommodities": [] };
+        function drawstatesmap() {
+            //Width and height of map
+            var width = 600;
+            var height = 300;
+            // D3 Projection
+            var projection = d3.geo.albersUsa()
+                               .translate([width / 2, height / 2])    // translate to center of screen
+                               .scale([600]);          // scale things down so see entire US
+
+            // Define path generator
+            var path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
+                         .projection(projection);  // tell path generator to use albersUsa projection
+            //Create SVG element and append map to the SVG
+            var svg = d3.select("#us_states_graph")
+                        .append("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+            // Append Div for tooltip to SVG
+            var div = d3.select("body")
+                        .append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
+            d3.json("app/data/US-States.json", function (json) {
+                svg.selectAll("path")
+                    .data(json.features)
+                    .enter()
+                    .append("path")
+                    .attr("d", path)
+                    .attr("id", function (d) {
+                        return "path_id_" + d.id;
+                    })
+                    .style("stroke", "#fff")
+                    .style("stroke-width", "1")
+                    .style("fill", function (d) {
+                        return "rgb(213,222,217)";
+                    }).on('click', showstatedata).on('mouseenter', showtooltip).on('mouseleave', hidetooltip);
+            });
+        }
+        drawstatesmap();
+        function getexportimportdata(statename) {
+            states_complete_data = { "exports": [], "imports": [], "allcommodities": [] };
+            document.getElementById('us_import_export_year').innerHTML = "";
+            var arr = { "2013": { "export": 0, "import": 0 }, "2014": { "export": 0, "import": 0 }, "2015": { "export": 0, "import": 0 }, "2016": { "export": 0, "import": 0 } };
+            var commodotiesexport = { "2013": [], "2014": [], "2015": [], "2016": [] };
+            var commodotiesimport = { "2013": [], "2014": [], "2015": [], "2016": [] };
+            d3.csv("app/data/exstall.csv", function (csv) {
+                csv.forEach(function (data1) {
+                    data1.val2013 = +data1.val2013;
+                    data1.val2014 = +data1.val2014;
+                    data1.val2015 = +data1.val2015;
+                    data1.val2016 = +data1.val2016;
+                    data1.rank = +data1.rank;
+                    states_complete_data.exports.push(data1);
+                });
+                d3.csv("app/data/exctyall.csv", function (csv) {
+                    csv.forEach(function (data1) {
+                        data1.rank = +data1.rank;
+                        for (var i = 0; i < states_complete_data.exports.length; i++) {
+                            if (states_complete_data.exports[i].statename == data1.statename && states_complete_data.exports[i].rank == data1.rank) {
+                                if (data1.countryid == 'World' && states_complete_data.exports[i].abbrevation == 'World') {
+                                    states_complete_data.exports[i].countryid = data1.countryid;
+                                    states_complete_data.exports[i].cvalue2013 = +data1.val2013;
+                                    states_complete_data.exports[i].cvalue2014 = +data1.val2014;
+                                    states_complete_data.exports[i].cvalue2015 = +data1.val2015;
+                                    states_complete_data.exports[i].cvalue2016 = +data1.val2016;
+                                    return;
+                                }
+                                else if (data1.countryid == 'Top 25' && states_complete_data.exports[i].abbrevation == 'Top 25') {
+                                    states_complete_data.exports[i].countryid = data1.countryid;
+                                    states_complete_data.exports[i].cvalue2013 = +data1.val2013;
+                                    states_complete_data.exports[i].cvalue2014 = +data1.val2014;
+                                    states_complete_data.exports[i].cvalue2015 = +data1.val2015;
+                                    states_complete_data.exports[i].cvalue2016 = +data1.val2016;
+                                    return;
+                                }
+                                else if (data1.countryid != 'Top 25' && data1.countryid != 'World') {
+                                    states_complete_data.exports[i].countryid = data1.countryid;
+                                    states_complete_data.exports[i].cvalue2013 = +data1.val2013;
+                                    states_complete_data.exports[i].cvalue2014 = +data1.val2014;
+                                    states_complete_data.exports[i].cvalue2015 = +data1.val2015;
+                                    states_complete_data.exports[i].cvalue2016 = +data1.val2016;
+                                    return;
+                                }
+
+                            }
+                        }
+                    });
+                });
+                d3.csv("app/data/imstall.csv", function (csv) {
+                    csv.forEach(function (data1) {
+                        data1.val2013 = +data1.val2013;
+                        data1.val2014 = +data1.val2014;
+                        data1.val2015 = +data1.val2015;
+                        data1.val2016 = +data1.val2016;
+                        data1.rank = +data1.rank;
+                        states_complete_data.imports.push(data1);
+                    });
+                    d3.csv("app/data/imctyall.csv", function (csv) {
+                        csv.forEach(function (data1) {
+                            data1.rank = +data1.rank;
+                            for (var i = 0; i < states_complete_data.imports.length; i++) {
+                                if (states_complete_data.imports[i].statename == data1.statename && states_complete_data.imports[i].rank == data1.rank) {
+                                    if (data1.countryid == 'World' && states_complete_data.imports[i].abbrevation == 'World') {
+                                        states_complete_data.imports[i].countryid = data1.countryid;
+                                        states_complete_data.imports[i].cvalue2013 = +data1.val2013;
+                                        states_complete_data.imports[i].cvalue2014 = +data1.val2014;
+                                        states_complete_data.imports[i].cvalue2015 = +data1.val2015;
+                                        states_complete_data.imports[i].cvalue2016 = +data1.val2016;
+                                        return;
+                                    }
+                                    else if (data1.countryid == 'Top 25' && states_complete_data.imports[i].abbrevation == 'Top 25') {
+                                        states_complete_data.imports[i].countryid = data1.countryid;
+                                        states_complete_data.imports[i].cvalue2013 = +data1.val2013;
+                                        states_complete_data.imports[i].cvalue2014 = +data1.val2014;
+                                        states_complete_data.imports[i].cvalue2015 = +data1.val2015;
+                                        states_complete_data.imports[i].cvalue2016 = +data1.val2016;
+                                        return;
+                                    }
+                                    else if (data1.countryid != 'Top 25' && data1.countryid != 'World') {
+                                        states_complete_data.imports[i].countryid = data1.countryid;
+                                        states_complete_data.imports[i].cvalue2013 = +data1.val2013;
+                                        states_complete_data.imports[i].cvalue2014 = +data1.val2014;
+                                        states_complete_data.imports[i].cvalue2015 = +data1.val2015;
+                                        states_complete_data.imports[i].cvalue2016 = +data1.val2016;
+                                        return;
+                                    }
+                                }
+                            }
+                        });
+                        for (var i = 0; i < states_complete_data.exports.length; i++) {
+                            if (statename == 'all') {
+                                arr['2013'].export += states_complete_data.exports[i].val2013;
+                                arr['2014'].export += states_complete_data.exports[i].val2014;
+                                arr['2015'].export += states_complete_data.exports[i].val2015;
+                                arr['2016'].export += states_complete_data.exports[i].val2016;
+                                var abbrevation = states_complete_data.exports[i].abbrevation;
+                                if (abbrevation != 'World' && abbrevation != 'Top 25') {
+                                    commodotiesexport['2013'].push({ "value": states_complete_data.exports[i].val2013, "name": abbrevation });
+                                    commodotiesexport['2014'].push({ "value": states_complete_data.exports[i].val2014, "name": abbrevation });
+                                    commodotiesexport['2015'].push({ "value": states_complete_data.exports[i].val2015, "name": abbrevation });
+                                    commodotiesexport['2016'].push({ "value": states_complete_data.exports[i].val2016, "name": abbrevation });
+                                }
+                            }
+                            else if (states_complete_data.exports[i].statename == statename) {
+                                arr['2013'].export += states_complete_data.exports[i].val2013;
+                                arr['2014'].export += states_complete_data.exports[i].val2014;
+                                arr['2015'].export += states_complete_data.exports[i].val2015;
+                                arr['2016'].export += states_complete_data.exports[i].val2016;
+                                var abbrevation = states_complete_data.exports[i].abbrevation;
+                                if (abbrevation != 'World' && abbrevation != 'Top 25') {
+                                    commodotiesexport['2013'].push({ "value": states_complete_data.exports[i].val2013, "name": abbrevation });
+                                    commodotiesexport['2014'].push({ "value": states_complete_data.exports[i].val2014, "name": abbrevation });
+                                    commodotiesexport['2015'].push({ "value": states_complete_data.exports[i].val2015, "name": abbrevation });
+                                    commodotiesexport['2016'].push({ "value": states_complete_data.exports[i].val2016, "name": abbrevation });
+                                }
+                            }
+                        }
+                        for (var i = 0; i < states_complete_data.imports.length; i++) {
+                            if (statename == 'all') {
+                                arr['2013'].import += states_complete_data.imports[i].val2013;
+                                arr['2014'].import += states_complete_data.imports[i].val2014;
+                                arr['2015'].import += states_complete_data.imports[i].val2015;
+                                arr['2016'].import += states_complete_data.imports[i].val2016;
+                                var abbrevation = states_complete_data.imports[i].abbrevation;
+                                if (abbrevation != 'World' && abbrevation != 'Top 25') {
+                                    commodotiesimport['2013'].push({ "value": states_complete_data.imports[i].val2013, "name": abbrevation });
+                                    commodotiesimport['2014'].push({ "value": states_complete_data.imports[i].val2014, "name": abbrevation });
+                                    commodotiesimport['2015'].push({ "value": states_complete_data.imports[i].val2015, "name": abbrevation });
+                                    commodotiesimport['2016'].push({ "value": states_complete_data.imports[i].val2016, "name": abbrevation });
+                                }
+                            }
+                            else if (states_complete_data.imports[i].statename == statename) {
+                                arr['2013'].import += states_complete_data.imports[i].val2013;
+                                arr['2014'].import += states_complete_data.imports[i].val2014;
+                                arr['2015'].import += states_complete_data.imports[i].val2015;
+                                arr['2016'].import += states_complete_data.imports[i].val2016;
+                                var abbrevation = states_complete_data.imports[i].abbrevation;
+                                if (abbrevation != 'World' && abbrevation != 'Top 25') {
+                                    commodotiesimport['2013'].push({ "value": states_complete_data.imports[i].val2013, "name": abbrevation });
+                                    commodotiesimport['2014'].push({ "value": states_complete_data.imports[i].val2014, "name": abbrevation });
+                                    commodotiesimport['2015'].push({ "value": states_complete_data.imports[i].val2015, "name": abbrevation });
+                                    commodotiesimport['2016'].push({ "value": states_complete_data.imports[i].val2016, "name": abbrevation });
+                                }
+                            }
+                        }
+                        drawexportimportgraph(arr);
+                        drawscatteredgraph(commodotiesexport, '#us_commodity_export_year');
+                        drawscatteredgraph(commodotiesimport, '#us_commodity_import_year');
+                    });
+                });
+            });
+        }
+        var tip = d3.tip()
+              .attr('class', 'd3-tip')
+              .offset([-10, 0])
+              .html(function (d) {
+                  return "<strong>" + d.rate + ": </strong> <span style='color:red'>" + Math.ceil(d.value * 1000) + " </span>";
+              })
+        function drawexportimportgraph(arr) {
+            var margin = { top: 20, right: 20, bottom: 30, left: 100 },
+            width = 550 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
+            var x0 = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1);
+
+            var x1 = d3.scale.ordinal();
+
+            var y = d3.scale.linear()
+                .range([height, 0]);
+
+            var xAxis = d3.svg.axis()
+                .scale(x0)
+                .tickSize(0)
+                .orient("bottom");
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left");
+
+            var color = d3.scale.ordinal()
+                .range(["#e9a3c9","#a1d76a"]);
+
+            var svg = d3.select('#us_import_export_year').append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            svg.call(tip);
+            var data = [];
+            var result = Object.keys(arr).map(function (key) {
+                return [key, arr[key]];
+            });
+            result.map(function (key) {
+                var xx = {
+                    "categorie": key[0],
+                    "values": [
+                        {
+                            "value": key[1].export,
+                            "rate": "Exports"
+                        },
+                        {
+                            "value": key[1].import,
+                            "rate": "Imports"
+                        }
+                    ]
+                };
+                data.push(xx);
+            });
+            var categoriesNames = data.map(function (d) { return d.categorie; });
+            var rateNames = data[0].values.map(function (d) { return d.rate; });
+            x0.domain(categoriesNames);
+            x1.domain(rateNames).rangeRoundBands([0, x0.rangeBand()]);
+            y.domain([0, d3.max(data, function (categorie) { return d3.max(categorie.values, function (d) { return d.value; }); })]);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            svg.select('.y').transition().duration(500).delay(1300).style('opacity', '1');
+
+            var slice = svg.selectAll(".slice")
+                .data(data)
+                .enter().append("g")
+                .attr("class", "g")
+                .attr("transform", function (d) { return "translate(" + x0(d.categorie) + ",0)"; });
+
+            slice.selectAll("rect")
+                .data(function (d) { return d.values; })
+            .enter().append("rect")
+                .attr("width", x1.rangeBand())
+                .attr("x", function (d) { return x1(d.rate); })
+                .style("fill", function (d) { return color(d.rate) })
+                .attr("y", function (d) { return y(0); })
+                .attr("height", function (d) { return height - y(0); })
+                .on("mouseover", function (d) {
+                    d3.select(this).style("fill", d3.rgb(color(d.rate)).darker(2));
+                    tip.show(d);
+                })
+                .on("mouseout", function (d) {
+                    d3.select(this).style("fill", color(d.rate));
+                    tip.hide(d);
+                });
+
+            slice.selectAll("rect")
+                .transition()
+                .delay(function (d) { return Math.random() * 1000; })
+                .duration(1000)
+                .attr("y", function (d) { return y(d.value); })
+                .attr("height", function (d) { return height - y(d.value); });
+
+            //Legend
+            var legend = svg.selectAll(".legend")
+                .data(data[0].values.map(function (d) { return d.rate; }).reverse())
+            .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; })
+                .style("opacity", "0");
+
+            legend.append("rect")
+                .attr("x", width - 18)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", function (d) { return color(d); });
+
+            legend.append("text")
+                .attr("x", width - 24)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "end")
+                .text(function (d) { return d; });
+
+            legend.transition().duration(500).delay(function (d, i) { return 1300 + 100 * i; }).style("opacity", "1");
+        }
+        function sortdataslice(data) {
+            var topData = data.sort(function (a, b) {
+                return d3.descending(+a.value, +b.value);
+            }).slice(0, 10);
+            return topData;
+        }
+        function drawscatteredgraph(data, targetelementid) {
+            // Setup svg using Bostock's margin convention
+            var margin = { top: 20, right: 160, bottom: 35, left: 100 };
+
+            var width = 550 - margin.left - margin.right,
+                height = 300 - margin.top - margin.bottom;
+
+            var svg = d3.select(targetelementid)
+                .html('')
+              .append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+            /* Data in strings like it would be if imported from a csv */
+            var data2013 = sortdataslice(data['2013']);
+            var data2014 = sortdataslice(data['2014']);
+            var data2015 = sortdataslice(data['2015']);
+            var data2016 = sortdataslice(data['2016']);
+            data2013['year'] = '2013';
+            data2014['year'] = '2014';
+            data2015['year'] = '2015';
+            data2016['year'] = '2016';
+            var data = [data2013, data2014, data2015, data2016];
+            console.log(data);
+            data.sort();
+            var parse = d3.time.format("%Y").parse;
+
+            // Transpose the data into layers
+            var dataset = d3.layout.stack()([0, 1, 2, 3, 5, 6, 7, 8, 9].map(function (index) {
+                return data.map(function (d) {
+                    return { x: parse(d.year), y: +d[index]['value'], title: d[index]['name'] };
+                });
+            }));
+
+
+            // Set x, y and colors
+            var x = d3.scale.ordinal()
+              .domain(dataset[0].map(function (d) { return d.x; }))
+              .rangeRoundBands([10, width - 10], 0.02);
+
+            var y = d3.scale.linear()
+              .domain([0, d3.max(dataset, function (d) { return d3.max(d, function (d) { return d.y0 + d.y; }); })])
+              .range([height, 0]);
+
+            var colors = ["#8c510a", "#bf812d", "#dfc27d", "#f6e8c3",'#f5f5f5','#c7eae5','#80cdc1','#35978f','#01665e'];
+
+
+            // Define and draw axes
+            var yAxis = d3.svg.axis()
+              .scale(y)
+              .orient("left")
+              .ticks(5)
+              .tickSize(-width, 0, 0)
+              .tickFormat(function (d) { return d });
+
+            var xAxis = d3.svg.axis()
+              .scale(x)
+              .orient("bottom")
+              .tickFormat(d3.time.format("%Y"));
+
+            svg.append("g")
+              .attr("class", "y axis")
+                .style('opacity', '0')
+              .call(yAxis);
+
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+
+            // Create groups for each series, rects for each segment
+            var groups = svg.selectAll("g.cost")
+              .data(dataset)
+              .enter().append("g")
+              .attr("class", "cost")
+              .style("fill", function (d, i) { return colors[i]; });
+
+            var rect = groups.selectAll("rect")
+              .data(function (d) { return d; })
+              .enter()
+              .append("rect")
+              .attr("x", function (d) { return x(d.x); })
+              .attr("y", function (d) { return y(d.y0 + d.y); })
+              .attr("height", function (d) { return y(d.y0) - y(d.y0 + d.y); })
+              .attr("width", x.rangeBand())
+              .on("mouseover", function () { tip.hide(); })
+              .on("mouseout", function () { tip.hide(); })
+              .on("mousemove", function (d) {
+                  d.rate = d.title;
+                  d.value = d.y;
+                  tip.show(d);
+              });
+
+
+            // Prep the tooltip bits, initial display is hidden
+            var tooltip = svg.append("g")
+              .attr("class", "tooltip")
+              .style("display", "none");
+
+            tooltip.append("rect")
+              .attr("width", 30)
+              .attr("height", 20)
+              .attr("fill", "white")
+              .style("opacity", 0.5);
+
+            tooltip.append("text")
+              .attr("x", 15)
+              .attr("dy", "1.2em")
+              .style("text-anchor", "middle")
+              .attr("font-size", "12px")
+              .attr("font-weight", "bold");
+        }
+        //drawexportimportgraph('all');
+        window.onload = function () {
+            getexportimportdata('all');
+
+            d3.tsv("data/importsCountryAll.tsv",
+                              function (error, data) {
+                                  var unique = [];
+                                  for (var i = 0; i < data.length; i++) {
+                                      if (unique.indexOf(data[i].countryd) === -1) {
+                                          unique.push(data[i].countryd);
+                                          //if (yearChange == "2016")
+                                          //    dataArray.push(data[i].val2016);
+                                          //else if (yearChange == "2015")
+                                          //    dataArray.push(data[i].val2015);
+                                          //else if (yearChange == "2014")
+                                          //    dataArray.push(data[i].val2014);
+                                          //else if (yearChange == "2013")
+                                          //    dataArray.push(data[i].val2013);
+                                      }
+
+                                      //dataArray.push(data[i].indicatorValue);
+                                      //dataGeoIdArray.push(data[i].geoLocId);
+                                  }
+
+                                  var selectList = $("#country");
+                                  selectList.find("option:gt(0)").remove();
+                                  $.each(unique, function (i, item) {
+                                      if (i > 0) {
+                                          $('#country').append($('<option>', {
+                                              value: item,
+                                              text: item
+                                          }));
+                                      }
+                                  });
+                              });
+        }
+        
+    </script>
+    
+    <div class="" style="width: 1800px;
+    margin-top: 130px;"><hr /><hr />
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                <h1 id="us_import_export_year_h1">Imports and Exports of US to all countries</h1>
+                <div id="us_import_export_year">
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                <h1 id="us_commodity_import_year_h1">Top 10 US Imports (Commodity wise) from World</h1>
+                <div id="us_commodity_import_year">
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+                <h1 id="us_commodity_export_year_h1">Top 10 US Exports (Commodity wise) to World</h1>
+                <div id="us_commodity_export_year">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

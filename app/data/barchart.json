@@ -1,0 +1,54 @@
+[
+    {
+        "categorie": "2013", 
+        "values": [
+            {
+                "value": 5, 
+                "rate": "Exports"
+            }, 
+            {
+                "value": 4, 
+                "rate": "Imports"
+            }
+        ]
+    }, 
+    {
+        "categorie": "2014", 
+        "values": [
+            {
+                "value": 1, 
+                "rate": "Exports"
+            }, 
+            {
+                "value": 21, 
+                "rate": "Imports"
+            }
+        ]
+    }, 
+    {
+        "categorie": "2015", 
+        "values": [
+            {
+                "value": 3, 
+                "rate": "Exports"
+            }, 
+            {
+                "value": 22, 
+                "rate": "Imports"
+            }
+        ]
+    }, 
+    {
+        "categorie": "2016", 
+        "values": [
+            {
+                "value": 12, 
+                "rate": "Exports"
+            }, 
+            {
+                "value": 7, 
+                "rate": "Imports"
+            }
+        ]
+    }
+]
