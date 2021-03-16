@@ -1,23 +1,29 @@
 ﻿<!DOCTYPE html>
 <html style="zoom: 75%;">
+
 <head>
     <title>Project 2: Visualization, Design and Analysis - US Census Foreign Trade</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=2">
     <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
     <script src="https://code.jquery.com/jquery-3.2.1.js"
-            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
-            crossorigin="anonymous"></script>
+        integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css">
-   <link href="app/css/bootstrap.min.css" rel="stylesheet" />  
+    <link href="app/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.11.0/d3.min.js"></script>
 
     <script src="lib/geostats.min.js"></script>
     <link href="lib/geostats.css" rel="stylesheet" />
     <style>
-        body, select option, select {
+        body,
+        select option,
+        select {
             font-family: Gotham-Book !important;
         }
 
@@ -36,30 +42,34 @@
             src: url('css/Fonts/OpenType/Gotham-Medium.otf') format('opentype');
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
         }
 
-        #map, #map1 {
+        #map,
+        #map1 {
             width: 800px;
             height: 500px;
             font-family: Gotham-Book !important;
         }
 
-        .info, .info1 {
+        .info,
+        .info1 {
             padding: 6px 8px;
             font: 14px/16px Gotham-Book !important;
             background: white;
-            background: rgba(255,255,255,0.8);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             border-radius: 5px;
         }
 
-            .info h4, .info1 h4 {
-                margin: 0 0 5px;
-                color: #777;
-            }
+        .info h4,
+        .info1 h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
 
         .legend {
             text-align: left;
@@ -67,15 +77,16 @@
             color: #555;
         }
 
-            .legend i {
-                width: 18px;
-                height: 18px;
-                float: left;
-                margin-right: 8px;
-                opacity: 0.7;
-            }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
 
-        input[type=radio].with-font, input[type=checkbox].with-font {
+        input[type=radio].with-font,
+        input[type=checkbox].with-font {
             border: 0;
             clip: rect(0 0 0 0);
             height: 1px;
@@ -86,31 +97,38 @@
             width: 1px;
         }
 
-            input[type=radio].with-font:checked ~ label:before, input[type=checkbox].with-font:checked ~ label:before {
-                content: "\f00c";
-                font-size: 1.2em;
-                color: darkgreen;
-                letter-spacing: 5px;
-            }
+        input[type=radio].with-font:checked~label:before,
+        input[type=checkbox].with-font:checked~label:before {
+            content: "\f00c";
+            font-size: 1.2em;
+            color: darkgreen;
+            letter-spacing: 5px;
+        }
 
-            input[type=radio].with-font ~ label:before, input[type=checkbox].with-font ~ label:before {
-                font-family: FontAwesome;
-                display: inline-block;
-                content: "\f1db";
-                letter-spacing: 10px;
-                font-size: 1.2em;
-                color: #535353;
-                width: 1.4em;
-            }
+        input[type=radio].with-font~label:before,
+        input[type=checkbox].with-font~label:before {
+            font-family: FontAwesome;
+            display: inline-block;
+            content: "\f1db";
+            letter-spacing: 10px;
+            font-size: 1.2em;
+            color: #535353;
+            width: 1.4em;
+        }
 
         #testCodeNum {
             width: 300px;
         }
     </style>
 </head>
+
 <body ng-app="todoApp" ng-controller="TodoListController as todoList">
-    <h3 style="margin-top:0px;">Project 2: USA Exports and Imports Visualizations for Analysis with US Census Foreign Trade Data.   &nbsp;  Documentation <a href="http://sindhu.stylesyou.com/project2/Documentation.html">click here</a> </h3>
-    <br /><br /><h6><b>Note:</b> Click state to show vizs <br />of state below map and Hover state<br />to see pie chart on right</h6>
+    <h3 style="margin-top:0px;">Project 2: USA Exports and Imports Visualizations for Analysis with US Census Foreign
+        Trade Data. &nbsp; Documentation <a href="http://sindhu.stylesyou.com/project2/Documentation.html">click
+            here</a> </h3>
+    <br /><br />
+    <h6><b>Note:</b> Click state to show vizs <br />of state below map and Hover state<br />to see pie chart on right
+    </h6>
     <div class="w3-sidebar w3-bar-block w3-collapse w3-card" style="width:300px;" id="mySidebar">
         <br /><br />
         <label style="margin-left:10px;margin-top:10px;">Select Year:</label>
@@ -118,7 +136,7 @@
             <option value="2013">2013</option>
             <option value="2014">2014</option>
             <option selected value="2015">2015</option>
-            <option  value="2016">2016</option>
+            <option value="2016">2016</option>
         </select><br /><br />
         <div style="margin-left:10px;margin-top:0px;">Select:</div>
         <div style="margin-left:90px;margin-top:-25px">
@@ -135,11 +153,13 @@
         <div style="margin-left:10px;margin-top:0px;">Select:</div>
 
         <div style="margin-left:90px;margin-top:-25px">
-            <input checked="" id="question3" onchange="$('#country').show(); $('#testCodeNum').hide(); " name="question1" type="radio" class="with-font" value="sel">
+            <input checked="" id="question3" onchange="$('#country').show(); $('#testCodeNum').hide(); "
+                name="question1" type="radio" class="with-font" value="sel">
             <label for="question3">By Country</label>
         </div>
         <div style="margin-left:90px; margin-top:-5px">
-            <input id="question4" name="question1" onchange="$('#country').hide(); $('#testCodeNum').show();" type="radio" class="with-font" value="sel">
+            <input id="question4" name="question1" onchange="$('#country').hide(); $('#testCodeNum').show();"
+                type="radio" class="with-font" value="sel">
             <label for="question4">By Products</label>
         </div><br />
 
@@ -164,18 +184,18 @@
                 callbackError = error;
                 callbackData = data;
                 list.selectAll("select")
-                .data(data)
-                .enter()
-                .append("option")
+                    .data(data)
+                    .enter()
+                    .append("option")
                     .attr("value", function (d) { return d.code_num; })
-                .text(function (d) { return d.code_num + " - " + d.code_name; })
+                    .text(function (d) { return d.code_num + " - " + d.code_name; })
             });
 
         var dataArray = [];
         var v;
         var dataTSV = "data/imstall.tsv";
-       
-        
+
+
         var importExportVal = "import";
         var yearVal = "2016";
         function exportImportValue() {
@@ -189,7 +209,7 @@
         var tempVal123;
         $(document).ready(function () {
             console.log("loading initial US content!");
-           
+
             tempVal123 = $("select#country option:selected").attr('value');
 
             USimportExport(dataTSV, importExportVal, yearVal, "World");
@@ -222,7 +242,7 @@
                         tempVal123 = $("select#testCodeNum option:selected").attr('value');
                         US1ImportExport(dataTSV);
                     }
-                USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
                 }
             });
 
@@ -254,7 +274,7 @@
                     USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
                 }
             });
-            
+
 
             $("select#testCodeNum").change(function () {
                 if ($("#question1")[0].checked) {
@@ -290,34 +310,32 @@
                 if ($("#question1")[0].checked) {
                     importExportVal = "import";
                     dataTSV = "data/imstall.tsv";
-                    if ($("#question3")[0].checked){
+                    if ($("#question3")[0].checked) {
                         dataTSV = "data/ImportsCountryAll.tsv";
                         tempVal123 = $("select#country option:selected").attr('value');
                         WorldImportExport(dataTSV);
                     }
-                    else{
+                    else {
                         dataTSV = "data/imstall.tsv";
                         tempVal123 = $("select#testCodeNum option:selected").attr('value');
                         US1ImportExport(dataTSV);
-                     }
-                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'),tempVal123);
+                    }
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
                 }
                 else {
                     importExportVal = "export";
                     dataTSV = "data/exstall.tsv";
-                    if ($("#question3")[0].checked)
-                    {  
+                    if ($("#question3")[0].checked) {
                         dataTSV = "data/ExportsToCountriesAll.tsv";
                         tempVal123 = $("select#country option:selected").attr('value');
                         WorldImportExport(dataTSV);
                     }
-                    else
-                    { 
+                    else {
                         dataTSV = "data/exstall.tsv";
                         tempVal123 = $("select#testCodeNum option:selected").attr('value');
                         US1ImportExport(dataTSV);
                     }
-                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'),tempVal123);
+                    USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'), tempVal123);
                 }
             });
 
@@ -359,34 +377,34 @@
             //USimportExport(dataTSV, importExportVal, $("select#year option:selected").attr('value'));
         }
 
-   
+
         function US1ImportExport(dataTSV1) {
             d3.tsv(dataTSV1,
-                           function (error, data) {
+                function (error, data) {
 
-                               var unique = [];
-                               var unique1 = [];
-                               for (var i = 0; i < data.length; i++) {
+                    var unique = [];
+                    var unique1 = [];
+                    for (var i = 0; i < data.length; i++) {
 
-                               
-                                   if (unique.indexOf(data[i].abbreviatn + ":" + data[i].hs6) === -1) {
-                                       unique.push(data[i].abbreviatn + ":" + data[i].hs6);
-                                     
-                                   }
 
-                               }
+                        if (unique.indexOf(data[i].abbreviatn + ":" + data[i].hs6) === -1) {
+                            unique.push(data[i].abbreviatn + ":" + data[i].hs6);
 
-                               var selectList = $("#testCodeNum");
-                               selectList.find("option:gt(0)").remove();
-                               $.each(unique, function (i, item) {
-                                   if (i > 0) {
-                                       $('#testCodeNum').append($('<option>', {
-                                           value: item.split(":")[1],
-                                           text: item.split(":")[0] + " HSCode:" + item.split(":")[1]
-                                       }));
-                                   }
-                               });
-                           });
+                        }
+
+                    }
+
+                    var selectList = $("#testCodeNum");
+                    selectList.find("option:gt(0)").remove();
+                    $.each(unique, function (i, item) {
+                        if (i > 0) {
+                            $('#testCodeNum').append($('<option>', {
+                                value: item.split(":")[1],
+                                text: item.split(":")[0] + " HSCode:" + item.split(":")[1]
+                            }));
+                        }
+                    });
+                });
         }
 
 
@@ -484,7 +502,7 @@
                     if (dataArray.length > 7)
                         v = serie.getJenks(7);
                     else
-                     v = serie.getJenks(2);
+                        v = serie.getJenks(2);
 
                     map = L.map('map').setView([37.8, -96], 4);
 
@@ -506,7 +524,7 @@
                         return this._div;
                     };
 
-               info.update = function (props) {
+                    info.update = function (props) {
                         this._div.innerHTML = '<h4>US ' + exportImportValue() + '</h4>' + (props ?
                             '<b>' + props.name + '</b><br />' + getMapValue(props.name) + ' $<sup></sup>'
                             : 'Hover over a state');
@@ -517,13 +535,13 @@
                     // get color depending on population density value
                     function getColor(d) {
                         return d == 7 ? '#800026' :
-                                d == 6 ? '#BD0026' :
+                            d == 6 ? '#BD0026' :
                                 d == 5 ? '#E31A1C' :
-                                d == 4 ? '#FC4E2A' :
-                                d == 3 ? '#FD8D3C' :
-                                d == 2 ? '#FEB24C' :
-                                d == 1 ? '#FED976' :
-                                            '#FFEDA0';
+                                    d == 4 ? '#FC4E2A' :
+                                        d == 3 ? '#FD8D3C' :
+                                            d == 2 ? '#FEB24C' :
+                                                d == 1 ? '#FED976' :
+                                                    '#FFEDA0';
                     }
 
                     function style(feature) {
@@ -566,8 +584,7 @@
                                     break;
                                 }
                             }
-                            else
-                            {
+                            else {
                                 if (data[i].statename == geogName && data[i].hs6 == countryProductID) {
                                     for (var j = 0; j < v.length; j++) {
                                         from = v[j];
@@ -601,7 +618,7 @@
                     function getMapValue(geogName) {
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].statename == geogName) {
-                                var dataTemp1=0;
+                                var dataTemp1 = 0;
                                 pieChartData = [];
                                 if (yearChange == "2016") {
                                     if ($("#question3")[0].checked) {
@@ -609,7 +626,7 @@
                                             var tempPieData = { "label": data[j].countryd, "value": data[j].share16 };
                                             pieChartData.push(tempPieData);
                                         }
-                                        for (z = i ; z < i + 27; z++) {
+                                        for (z = i; z < i + 27; z++) {
                                             if (data[z].countryd == countryProductID) {
                                                 dataTemp1 = data[z].val2016;
                                             }
@@ -621,7 +638,7 @@
                                             pieChartData.push(tempPieData);
                                         }
 
-                                        for (z = i ; z < i + 27; z++) {
+                                        for (z = i; z < i + 27; z++) {
                                             if (data[z].hs6 == countryProductID) {
                                                 dataTemp1 = data[z].val2016;
                                             }
@@ -638,7 +655,7 @@
                                             pieChartData.push(tempPieData);
                                         }
 
-                                        for (z = i ; z < i + 27; z++) {
+                                        for (z = i; z < i + 27; z++) {
                                             if (data[z].countryd == countryProductID) {
                                                 dataTemp1 = data[z].val2015;
                                             }
@@ -650,7 +667,7 @@
                                             pieChartData.push(tempPieData);
                                         }
 
-                                        for (z = i ; z < i + 27; z++) {
+                                        for (z = i; z < i + 27; z++) {
                                             if (data[z].hs6 == countryProductID) {
                                                 dataTemp1 = data[z].val2015;
                                             }
@@ -665,7 +682,7 @@
                                             var tempPieData = { "label": data[j].countryd, "value": data[j].share14 };
                                             pieChartData.push(tempPieData);
                                         }
-                                        for (z = i ; z < i + 27; z++) {
+                                        for (z = i; z < i + 27; z++) {
                                             if (data[z].countryd == countryProductID) {
                                                 dataTemp1 = data[z].val2014;
                                             }
@@ -676,7 +693,7 @@
                                             var tempPieData = { "label": data[j].abbreviatn, "value": data[j].share14 };
                                             pieChartData.push(tempPieData);
                                         }
-                                        for (z = i ; z < i + 27; z++) {
+                                        for (z = i; z < i + 27; z++) {
                                             if (data[z].hs6 == countryProductID) {
                                                 dataTemp1 = data[z].val2014;
                                             }
@@ -691,9 +708,8 @@
                                             var tempPieData = { "label": data[j].countryd, "value": data[j].share13 };
                                             pieChartData.push(tempPieData);
                                         }
-                                        for (z = i ; z < i + 27; z++) {
-                                            if (data[z].countryd == countryProductID)
-                                            {
+                                        for (z = i; z < i + 27; z++) {
+                                            if (data[z].countryd == countryProductID) {
                                                 dataTemp1 = data[z].val2013;
                                             }
                                         }
@@ -704,9 +720,8 @@
                                             pieChartData.push(tempPieData);
                                         }
 
-                                        for (z = i ; z < i + 17; z++) {
-                                            if (data[z].hs6 == countryProductID)
-                                            {
+                                        for (z = i; z < i + 17; z++) {
+                                            if (data[z].hs6 == countryProductID) {
                                                 dataTemp1 = data[z].val2013;
                                             }
                                         }
@@ -737,7 +752,7 @@
                     }
 
                     function highlightFeature1(e) {
-                        
+
                         var layer = e.target;
                         $("#pieChart1").show();
                         layer.setStyle({
@@ -813,9 +828,9 @@
                         //var dataGeoIdArray = [];
                         //var v;
                         div = L.DomUtil.create('div', 'info legend'),
-                           grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-                           labels = [],
-                           from, to;
+                            grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+                            labels = [],
+                            from, to;
                         //d3.tsv("data/imstall.tsv",
                         //    function (error, data) {
 
@@ -923,13 +938,14 @@
             }
         }
     </script>
-    <script data-require="d3@*" data-semver="3.4.6" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
+    <script data-require="d3@*" data-semver="3.4.6"
+        src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js"></script>
 
     <script>
         $(document).ready(function () {
-          });
+        });
     </script>
-  
+
     <style>
         #pieChart1 {
             width: 1720px;
@@ -939,50 +955,50 @@
             top: 40px;
         }
 
-            #pieChart1 svg {
-                width: 100%;
-                height: 100%;
-            }
+        #pieChart1 svg {
+            width: 100%;
+            height: 100%;
+        }
 
-            #pieChart1 .legend {
-                visibility: hidden;
-            }
+        #pieChart1 .legend {
+            visibility: hidden;
+        }
 
-            #pieChart1 path.slice {
-                stroke-width: 2px;
-            }
+        #pieChart1 path.slice {
+            stroke-width: 2px;
+        }
 
-            #pieChart1 polyline {
-                opacity: .3;
-                stroke: black;
-                stroke-width: 2px;
-                fill: none;
-            }
+        #pieChart1 polyline {
+            opacity: .3;
+            stroke: black;
+            stroke-width: 2px;
+            fill: none;
+        }
 
-            #pieChart1 .labelValue {
-                font-size: 16px;
-                opacity: .5;
-            }
+        #pieChart1 .labelValue {
+            font-size: 16px;
+            opacity: .5;
+        }
 
-            #pieChart1 .toolTip {
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                position: absolute;
-                display: none;
-                width: auto;
-                height: auto;
-                background: none repeat scroll 0 0 white;
-                border: 0 none;
-                border-radius: 8px 8px 8px 8px;
-                box-shadow: -3px 3px 15px #888888;
-                color: black;
-                font: 12px sans-serif;
-                padding: 5px;
-                text-align: center;
-            }
+        #pieChart1 .toolTip {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            position: absolute;
+            display: none;
+            width: auto;
+            height: auto;
+            background: none repeat scroll 0 0 white;
+            border: 0 none;
+            border-radius: 8px 8px 8px 8px;
+            box-shadow: -3px 3px 15px #888888;
+            color: black;
+            font: 12px sans-serif;
+            padding: 5px;
+            text-align: center;
+        }
 
-            #pieChart1 text {
-                font: 16px sans-serif;
-            }
+        #pieChart1 text {
+            font: 16px sans-serif;
+        }
     </style>
     <script>
         d3.select("input[value=\"total\"]").property("checked", true);
@@ -1030,30 +1046,30 @@
             .range(colorRange.range());
 
         datasetTotal = [
-                { label: "Category 1", value: 19 },
-                { label: "Category 2", value: 5 },
-                { label: "Category 3", value: 13 },
-                { label: "Category 4", value: 17 },
-                { label: "Category 5", value: 19 },
-                { label: "Category 6", value: 27 }
+            { label: "Category 1", value: 19 },
+            { label: "Category 2", value: 5 },
+            { label: "Category 3", value: 13 },
+            { label: "Category 4", value: 17 },
+            { label: "Category 5", value: 19 },
+            { label: "Category 6", value: 27 }
         ];
 
         datasetOption1 = [
-                { label: "Category 1", value: 22 },
-                { label: "Category 2", value: 33 },
-                { label: "Category 3", value: 4 },
-                { label: "Category 4", value: 15 },
-                { label: "Category 5", value: 36 },
-                { label: "Category 6", value: 0 }
+            { label: "Category 1", value: 22 },
+            { label: "Category 2", value: 33 },
+            { label: "Category 3", value: 4 },
+            { label: "Category 4", value: 15 },
+            { label: "Category 5", value: 36 },
+            { label: "Category 6", value: 0 }
         ];
 
         datasetOption2 = [
-                { label: "Category 1", value: 10 },
-                { label: "Category 2", value: 20 },
-                { label: "Category 3", value: 30 },
-                { label: "Category 4", value: 5 },
-                { label: "Category 5", value: 12 },
-                { label: "Category 6", value: 23 }
+            { label: "Category 1", value: 10 },
+            { label: "Category 2", value: 20 },
+            { label: "Category 3", value: 30 },
+            { label: "Category 4", value: 5 },
+            { label: "Category 5", value: 12 },
+            { label: "Category 6", value: 23 }
         ];
 
         d3.selectAll("input")
@@ -1206,89 +1222,96 @@
 
 
         $(document).ready(function () {
-            
+
             setTimeout($('select#year').val(2013).change(), 3500);
         });
 
         function WorldImportExport(dataTSV1) {
             d3.tsv(dataTSV1,
-                           function (error, data) {
-                               var unique = [];
-                               for (var i = 0; i < data.length; i++) {
-                                   if (unique.indexOf(data[i].countryd) === -1) {
-                                       unique.push(data[i].countryd);
-                                   }
-                               }
+                function (error, data) {
+                    var unique = [];
+                    for (var i = 0; i < data.length; i++) {
+                        if (unique.indexOf(data[i].countryd) === -1) {
+                            unique.push(data[i].countryd);
+                        }
+                    }
 
-                               var selectList = $("#country");
-                               selectList.find("option:gt(0)").remove();
-                               $.each(unique, function (i, item) {
-                                   if (i > 0) {
-                                       $('#country').append($('<option>', {
-                                           value: item,
-                                           text: item
-                                       }));
-                                   }
-                               });
-                           });
+                    var selectList = $("#country");
+                    selectList.find("option:gt(0)").remove();
+                    $.each(unique, function (i, item) {
+                        if (i > 0) {
+                            $('#country').append($('<option>', {
+                                value: item,
+                                text: item
+                            }));
+                        }
+                    });
+                });
         }
 
 
     </script>
 
     <style>
-        #us_states_graph,#us_import_export_year,#us_commodity_export_year,#us_commodity_import_year
-{
-	border:2px solid #cdcdcd;
-}
-#us_states_graph_h1,#us_import_export_year_h1,#us_commodity_export_year_h1,#us_commodity_import_year_h1
-{
-	margin-top: 10px;
-    font-size:16px;
-}
+        #us_states_graph,
+        #us_import_export_year,
+        #us_commodity_export_year,
+        #us_commodity_import_year {
+            border: 2px solid #cdcdcd;
+        }
+
+        #us_states_graph_h1,
+        #us_import_export_year_h1,
+        #us_commodity_export_year_h1,
+        #us_commodity_import_year_h1 {
+            margin-top: 10px;
+            font-size: 16px;
+        }
 
 
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
-}
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
 
-path.domain {
-    display: none;
-}
-/* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
-}
+        path.domain {
+            display: none;
+        }
 
-/* Style northward tooltips differently */
-.d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
-}
-.tooltip {
-	opacity:1 !important;	
-}
+        /* Creates a small triangle extender for the tooltip */
+        .d3-tip:after {
+            box-sizing: border-box;
+            display: inline;
+            font-size: 10px;
+            width: 100%;
+            line-height: 1;
+            color: rgba(0, 0, 0, 0.8);
+            content: "\25BC";
+            position: absolute;
+            text-align: center;
+        }
+
+        /* Style northward tooltips differently */
+        .d3-tip.n:after {
+            margin: -1px 0 0 0;
+            top: 100%;
+            left: 0;
+        }
+
+        .tooltip {
+            opacity: 1 !important;
+        }
     </style>
     <!--sindhu-->
     <script src="app/js/d3.tip.v0.6.3.js"></script>
     <script type="text/javascript">
         function showstatedata(d) {
             var us_states_graph = document.getElementById('us_states_graph');
-            document.getElementById('us_import_export_year_h1').innerHTML = 'Imports and Exports of ' + d.properties.name+' to world';
+            document.getElementById('us_import_export_year_h1').innerHTML = 'Imports and Exports of ' + d.properties.name + ' to world';
             document.getElementById('us_commodity_export_year_h1').innerHTML = 'Top 10 Exports of ' + d.properties.name + ' (Commodity wise) to world';
             document.getElementById('us_commodity_import_year_h1').innerHTML = 'Top 10 Imports of ' + d.properties.name + ' (Commodity wise) from world';
             getexportimportdata(d.properties.name);
@@ -1306,22 +1329,22 @@ path.domain {
             var height = 300;
             // D3 Projection
             var projection = d3.geo.albersUsa()
-                               .translate([width / 2, height / 2])    // translate to center of screen
-                               .scale([600]);          // scale things down so see entire US
+                .translate([width / 2, height / 2])    // translate to center of screen
+                .scale([600]);          // scale things down so see entire US
 
             // Define path generator
             var path = d3.geo.path()               // path generator that will convert GeoJSON to SVG paths
-                         .projection(projection);  // tell path generator to use albersUsa projection
+                .projection(projection);  // tell path generator to use albersUsa projection
             //Create SVG element and append map to the SVG
             var svg = d3.select("#us_states_graph")
-                        .append("svg")
-                        .attr("width", width)
-                        .attr("height", height);
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
             // Append Div for tooltip to SVG
             var div = d3.select("body")
-                        .append("div")
-                        .attr("class", "tooltip")
-                        .style("opacity", 0);
+                .append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
             d3.json("app/data/US-States.json", function (json) {
                 svg.selectAll("path")
                     .data(json.features)
@@ -1493,15 +1516,15 @@ path.domain {
             });
         }
         var tip = d3.tip()
-              .attr('class', 'd3-tip')
-              .offset([-10, 0])
-              .html(function (d) {
-                  return "<strong>" + d.rate + ": </strong> <span style='color:red'>" + Math.ceil(d.value * 1000) + " </span>";
-              })
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d) {
+                return "<strong>" + d.rate + ": </strong> <span style='color:red'>" + Math.ceil(d.value * 1000) + " </span>";
+            })
         function drawexportimportgraph(arr) {
             var margin = { top: 20, right: 20, bottom: 30, left: 100 },
-            width = 550 - margin.left - margin.right,
-            height = 300 - margin.top - margin.bottom;
+                width = 550 - margin.left - margin.right,
+                height = 300 - margin.top - margin.bottom;
             var x0 = d3.scale.ordinal()
                 .rangeRoundBands([0, width], .1);
 
@@ -1520,12 +1543,12 @@ path.domain {
                 .orient("left");
 
             var color = d3.scale.ordinal()
-                .range(["#e9a3c9","#a1d76a"]);
+                .range(["#e9a3c9", "#a1d76a"]);
 
             var svg = d3.select('#us_import_export_year').append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
-              .append("g")
+                .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             svg.call(tip);
             var data = [];
@@ -1569,7 +1592,7 @@ path.domain {
 
             slice.selectAll("rect")
                 .data(function (d) { return d.values; })
-            .enter().append("rect")
+                .enter().append("rect")
                 .attr("width", x1.rangeBand())
                 .attr("x", function (d) { return x1(d.rate); })
                 .style("fill", function (d) { return color(d.rate) })
@@ -1594,7 +1617,7 @@ path.domain {
             //Legend
             var legend = svg.selectAll(".legend")
                 .data(data[0].values.map(function (d) { return d.rate; }).reverse())
-            .enter().append("g")
+                .enter().append("g")
                 .attr("class", "legend")
                 .attr("transform", function (d, i) { return "translate(0," + i * 20 + ")"; })
                 .style("opacity", "0");
@@ -1629,11 +1652,11 @@ path.domain {
 
             var svg = d3.select(targetelementid)
                 .html('')
-              .append("svg")
-              .attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
-              .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
             /* Data in strings like it would be if imported from a csv */
@@ -1660,123 +1683,125 @@ path.domain {
 
             // Set x, y and colors
             var x = d3.scale.ordinal()
-              .domain(dataset[0].map(function (d) { return d.x; }))
-              .rangeRoundBands([10, width - 10], 0.02);
+                .domain(dataset[0].map(function (d) { return d.x; }))
+                .rangeRoundBands([10, width - 10], 0.02);
 
             var y = d3.scale.linear()
-              .domain([0, d3.max(dataset, function (d) { return d3.max(d, function (d) { return d.y0 + d.y; }); })])
-              .range([height, 0]);
+                .domain([0, d3.max(dataset, function (d) { return d3.max(d, function (d) { return d.y0 + d.y; }); })])
+                .range([height, 0]);
 
-            var colors = ["#8c510a", "#bf812d", "#dfc27d", "#f6e8c3",'#f5f5f5','#c7eae5','#80cdc1','#35978f','#01665e'];
+            var colors = ["#8c510a", "#bf812d", "#dfc27d", "#f6e8c3", '#f5f5f5', '#c7eae5', '#80cdc1', '#35978f', '#01665e'];
 
 
             // Define and draw axes
             var yAxis = d3.svg.axis()
-              .scale(y)
-              .orient("left")
-              .ticks(5)
-              .tickSize(-width, 0, 0)
-              .tickFormat(function (d) { return d });
+                .scale(y)
+                .orient("left")
+                .ticks(5)
+                .tickSize(-width, 0, 0)
+                .tickFormat(function (d) { return d });
 
             var xAxis = d3.svg.axis()
-              .scale(x)
-              .orient("bottom")
-              .tickFormat(d3.time.format("%Y"));
+                .scale(x)
+                .orient("bottom")
+                .tickFormat(d3.time.format("%Y"));
 
             svg.append("g")
-              .attr("class", "y axis")
+                .attr("class", "y axis")
                 .style('opacity', '0')
-              .call(yAxis);
+                .call(yAxis);
 
             svg.append("g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + height + ")")
-              .call(xAxis);
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
 
 
             // Create groups for each series, rects for each segment
             var groups = svg.selectAll("g.cost")
-              .data(dataset)
-              .enter().append("g")
-              .attr("class", "cost")
-              .style("fill", function (d, i) { return colors[i]; });
+                .data(dataset)
+                .enter().append("g")
+                .attr("class", "cost")
+                .style("fill", function (d, i) { return colors[i]; });
 
             var rect = groups.selectAll("rect")
-              .data(function (d) { return d; })
-              .enter()
-              .append("rect")
-              .attr("x", function (d) { return x(d.x); })
-              .attr("y", function (d) { return y(d.y0 + d.y); })
-              .attr("height", function (d) { return y(d.y0) - y(d.y0 + d.y); })
-              .attr("width", x.rangeBand())
-              .on("mouseover", function () { tip.hide(); })
-              .on("mouseout", function () { tip.hide(); })
-              .on("mousemove", function (d) {
-                  d.rate = d.title;
-                  d.value = d.y;
-                  tip.show(d);
-              });
+                .data(function (d) { return d; })
+                .enter()
+                .append("rect")
+                .attr("x", function (d) { return x(d.x); })
+                .attr("y", function (d) { return y(d.y0 + d.y); })
+                .attr("height", function (d) { return y(d.y0) - y(d.y0 + d.y); })
+                .attr("width", x.rangeBand())
+                .on("mouseover", function () { tip.hide(); })
+                .on("mouseout", function () { tip.hide(); })
+                .on("mousemove", function (d) {
+                    d.rate = d.title;
+                    d.value = d.y;
+                    tip.show(d);
+                });
 
 
             // Prep the tooltip bits, initial display is hidden
             var tooltip = svg.append("g")
-              .attr("class", "tooltip")
-              .style("display", "none");
+                .attr("class", "tooltip")
+                .style("display", "none");
 
             tooltip.append("rect")
-              .attr("width", 30)
-              .attr("height", 20)
-              .attr("fill", "white")
-              .style("opacity", 0.5);
+                .attr("width", 30)
+                .attr("height", 20)
+                .attr("fill", "white")
+                .style("opacity", 0.5);
 
             tooltip.append("text")
-              .attr("x", 15)
-              .attr("dy", "1.2em")
-              .style("text-anchor", "middle")
-              .attr("font-size", "12px")
-              .attr("font-weight", "bold");
+                .attr("x", 15)
+                .attr("dy", "1.2em")
+                .style("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("font-weight", "bold");
         }
         //drawexportimportgraph('all');
         window.onload = function () {
             getexportimportdata('all');
 
             d3.tsv("data/importsCountryAll.tsv",
-                              function (error, data) {
-                                  var unique = [];
-                                  for (var i = 0; i < data.length; i++) {
-                                      if (unique.indexOf(data[i].countryd) === -1) {
-                                          unique.push(data[i].countryd);
-                                          //if (yearChange == "2016")
-                                          //    dataArray.push(data[i].val2016);
-                                          //else if (yearChange == "2015")
-                                          //    dataArray.push(data[i].val2015);
-                                          //else if (yearChange == "2014")
-                                          //    dataArray.push(data[i].val2014);
-                                          //else if (yearChange == "2013")
-                                          //    dataArray.push(data[i].val2013);
-                                      }
+                function (error, data) {
+                    var unique = [];
+                    for (var i = 0; i < data.length; i++) {
+                        if (unique.indexOf(data[i].countryd) === -1) {
+                            unique.push(data[i].countryd);
+                            //if (yearChange == "2016")
+                            //    dataArray.push(data[i].val2016);
+                            //else if (yearChange == "2015")
+                            //    dataArray.push(data[i].val2015);
+                            //else if (yearChange == "2014")
+                            //    dataArray.push(data[i].val2014);
+                            //else if (yearChange == "2013")
+                            //    dataArray.push(data[i].val2013);
+                        }
 
-                                      //dataArray.push(data[i].indicatorValue);
-                                      //dataGeoIdArray.push(data[i].geoLocId);
-                                  }
+                        //dataArray.push(data[i].indicatorValue);
+                        //dataGeoIdArray.push(data[i].geoLocId);
+                    }
 
-                                  var selectList = $("#country");
-                                  selectList.find("option:gt(0)").remove();
-                                  $.each(unique, function (i, item) {
-                                      if (i > 0) {
-                                          $('#country').append($('<option>', {
-                                              value: item,
-                                              text: item
-                                          }));
-                                      }
-                                  });
-                              });
+                    var selectList = $("#country");
+                    selectList.find("option:gt(0)").remove();
+                    $.each(unique, function (i, item) {
+                        if (i > 0) {
+                            $('#country').append($('<option>', {
+                                value: item,
+                                text: item
+                            }));
+                        }
+                    });
+                });
         }
-        
+
     </script>
-    
+
     <div class="" style="width: 1800px;
-    margin-top: 130px;"><hr /><hr />
+    margin-top: 130px;">
+        <hr />
+        <hr />
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
                 <h1 id="us_import_export_year_h1">Imports and Exports of US to all countries</h1>
@@ -1800,4 +1825,5 @@ path.domain {
     </div>
 
 </body>
+
 </html>
